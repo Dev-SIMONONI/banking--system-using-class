@@ -3,7 +3,7 @@ class BankAccount:
     promo_prize = 2000
 
 
-    def __init__(self, name, balance, has_promo=False, isAdmin=False, isfrezze=False, messaging=False, message_type="SMS"):
+    def __init__(self, name, balance, has_promo=False, isAdmin=False, isfrezze=False, messaging=False, message_type=[]):
         if has_promo == True:
             balance += self.promo_prize
         self.fullname=name
@@ -11,7 +11,7 @@ class BankAccount:
         self.total_bal = balance
         self.Admin = isAdmin
         self.frozen= isfrezze
-        self.inbox_type = [message_type]
+        self.inbox_type = message_type
         self.ismessage = messaging
 
 
@@ -20,10 +20,10 @@ class BankAccount:
         if self.ismessage == True:
             for choice in self.inbox_type:
                 if choice == "SMS":
-                    return f"SMS: {trans_type} Alert of {amount} from {self.fullname}: {self.account_nums} Thank you for banking with us"
+                    print( f"SMS: {trans_type} Alert of {amount} \n Account Name:{self.fullname}\n Account number:{self.account_nums}\n Account Balance: {self.total_bal}\n Thank you for banking with us")
                 if choice == "E-MAIL":
-                    return f"E-MAIL {trans_type} \n Alert of {amount} from account details: {self.fullname}: {self.account_nums} \n if you did not approve this message send us a message to freeze this account \n Thank you for banking with us" 
-
+                    print (f"E-MAIL {trans_type} Alert of {amount}\n Account Name: {self.fullname}\n Account number:{self.account_nums}\n if you did not approve of this E-Mail send us a message to freeze this account\nThank you for banking with us" )
+        return "DONE"
 
     def frezze(self):
         if self.Admin == True:
@@ -31,6 +31,15 @@ class BankAccount:
             return f"{self.account_nums} Your account has been frozen"
         else:
             return "You do not access to frezze this account"
+
+    def unfrezze(self):
+        if self.Admin == True:
+            if self.frozen == True:
+                self.frozen = False
+                return "Account unfrezze sucessfully"
+                
+        else:
+            return "You do not have access to unfrezze this account visit management for more enquries"
 
 
     def deposit(self, amount):
@@ -46,13 +55,16 @@ class BankAccount:
 
         
     def withdraw(self,amount):
-        if amount <= self.total_bal:
-            self.total_bal -= amount
-            print(self.notify("DEBIT", amount))
-            return"Withdraw sucessful"
-            
+        if self.frozen:
+            return self.frezze()
         else:
-            return "Insuffient funds"
+            if amount <= self.total_bal:
+                self.total_bal -= amount
+                print(self.notify("DEBIT", amount))
+                return"Withdraw sucessful"
+            
+            else:
+                return "Insuffient funds"
 
 
     def transfer(self, recipent, amount):
@@ -70,11 +82,13 @@ class BankAccount:
             return "Insuffient funds"
 
         
-simon = BankAccount("stephen", 1000, isAdmin = True, messaging = True, message_type="SMS")
+simon = BankAccount("stephen", 1000, isAdmin = True, messaging = True, message_type = ["SMS","E-MAIL"])
 klaus = BankAccount("klaus", 4000)
 
 print(simon.deposit(200))
-
+print(simon.frezze())
+print(simon.withdraw(200))
+print(simon.unfrezze())
 print(simon.withdraw(200))
 
 
